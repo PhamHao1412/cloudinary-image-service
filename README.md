@@ -148,40 +148,6 @@ Use the included `api.http` file to quickly test:
 
 ---
 
-## 📦 Docker Compose
-
-```yaml
-version: '3.9'
-services:
-  db:
-    image: postgres:16
-    restart: always
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: hacker1412
-      POSTGRES_DB: playground
-    ports:
-      - "5432:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-
-  image-service:
-    build: .
-    ports:
-      - "8085:8085"
-    environment:
-      - PORT=8085
-      - DATABASE_URL=postgres://postgres:hacker1412@db:5432/playground?sslmode=disable&search_path=image_service
-    depends_on:
-      - db
-    restart: unless-stopped
-
-volumes:
-  pgdata:
-```
-
----
-
 ## 🧑‍💻 Development Notes
 
 - Uses GORM for ORM and migrations.
