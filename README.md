@@ -55,75 +55,66 @@ It supports dynamic image transformations such as resize, crop, rotate, watermar
 
 ## ⚙️ Tech Stack
 
-- **Language:** Go 1.22  
-- **Framework:** Gin  
-- **Storage:** Cloudinary  
-- **Database:** PostgreSQL (GORM ORM)  
-- **Container:** Docker & Docker Compose  
+- **Language:** Go 1.22
+- **Framework:** Gin
+- **Storage:** Cloudinary
+- **Database:** PostgreSQL (GORM ORM)
+- **Containerization:** Docker + Makefile (no docker-compose required)
 
 ---
 
 ## 🧰 Prerequisites
 
 - [Go 1.22+](https://go.dev/)
-- [Docker & Docker Compose](https://www.docker.com/)
+- [Docker](https://www.docker.com/)
 - [Cloudinary account](https://cloudinary.com/)
-- (Optional) [VS Code REST Client extension](https://marketplace.visualstudio.com/items?itemName=humao.rest-client)
+- [PostgreSQL running locally or via Docker]
 
 ---
 
-## 🏗️ Setup & Run
+## 🔧 Configuration
 
-### 1️⃣ Clone repository
-```bash
-git clone https://github.com/<your-username>/image-service-cloudinary.git
-cd image-service-cloudinary
-```
+Tạo file `.env` ở thư mục gốc:
 
-### 2️⃣ Configure Cloudinary credentials
-Edit in `internal/storage/cloudinary_storage.go`:
-```go
-cloudinary.NewFromParams("<cloud_name>", "<api_key>", "<api_secret>")
+```env
+PORT=8085
+DATABASE_URL=postgres://postgres:hacker1412@localhost:5438/playground?sslmode=disable&search_path=image_service
+CLOUDINARY_URL=cloudinary://<api_key>:<api_secret>@<cloud_name>
 ```
-or export environment variable:
-```bash
-export CLOUDINARY_URL=cloudinary://<api_key>:<api_secret>@<cloud_name>
-```
-
-### 3️⃣ Start services (API + Postgres)
-```bash
-docker compose up --build
-```
-
-App runs at 👉 **http://localhost:8085**
 
 ---
 
-## 🔥 API Examples
+## 🏗️ Build & Run with Makefile
 
-See `api.http` file (VS Code REST client)  
-or run manually with curl:
-
+### 🔨 Build Docker image
 ```bash
-curl -F "file=@black_goku.jpg" http://localhost:8085/api/v1/upload
+make build
 ```
 
-**Response:**
-```json
-{
-  "id": "uuid",
-  "url": "https://res.cloudinary.com/xxx/image/upload/...jpg",
-  "format": "jpg",
-  "uploaded_at": "2025-10-22T04:35:00Z"
-}
-```
-
-Then you can:
+### 🚀 Run container
 ```bash
-curl -X POST http://localhost:8085/api/v1/resize   -H "Content-Type: application/json"   -d '{"id":"<uuid>","width":400,"height":300}'
+make run
 ```
 
-Full list of endpoints:
+### 📜 View logs
+```bash
+make logs
+```
+
+### 🛑 Stop and remove container
+```bash
+make stop
+```
+
+### 🧽 Clean image
+```bash
+make clean
+```
+
+---
+
+## 🔥 API Endpoints
+
 | Method | Endpoint | Description |
 |--------|-----------|-------------|
 | POST | `/upload` | Upload new image |
@@ -141,61 +132,44 @@ Full list of endpoints:
 
 ## 🧪 Quick Demo with REST Client
 
-Use the included `api.http` file to quickly test:
-- Open in VS Code
-- Click **Send Request**
-- See JSON response inline
+Use the included `docs/api.http` file (VS Code REST Client):
 
----
+1. Install [REST Client extension](https://marketplace.visualstudio.com/items?itemName=humao.rest-client)
+2. Open `docs/api.http`
+3. Click **“Send Request”** above each API block
+4. See JSON response inline
 
-## 📦 Docker Compose
-
-```yaml
-version: '3.9'
-services:
-  db:
-    image: postgres:16
-    restart: always
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: hacker1412
-      POSTGRES_DB: playground
-    ports:
-      - "5432:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-
-  image-service:
-    build: .
-    ports:
-      - "8085:8085"
-    environment:
-      - PORT=8085
-      - DATABASE_URL=postgres://postgres:hacker1412@db:5432/playground?sslmode=disable&search_path=image_service
-    depends_on:
-      - db
-    restart: unless-stopped
-
-volumes:
-  pgdata:
+Or use curl manually:
+```bash
+curl -F "file=@black_goku.jpg" http://localhost:8085/api/v1/upload
 ```
 
 ---
 
-## 🧑‍💻 Development Notes
+## 🧾 Example Response
 
-- Uses GORM for ORM and migrations.
-- Logs:
-  - Gin colored HTTP logs.
-  - GORM query logs enabled.
-- Clean Architecture pattern (api → service → storage/db).
+```json
+{
+  "id": "a8e04a73-3e93-4cb3-9a54-29cfd4dd293b",
+  "url": "https://res.cloudinary.com/dlqwa0yhj/image/upload/v1730000000/image-service/originals/a8e04a73.jpg",
+  "format": "jpg",
+  "uploaded_at": "2025-10-22T09:00:00Z"
+}
+```
+
+---
+
+## 🧠 Notes
+
+- Gin logs use **colored console output**
+- GORM logs **show SQL queries**
+- Designed with **Clean Architecture** (api → service → storage → db)
 
 ---
 
 ## 🧾 License
 
-MIT © 2025 — Created by Hao Pham  
-This project is for educational and open-source purposes.
+MIT © 2025 — Created by [Hao Pham](mailto:hao.pham@kyanon.digital)
 
 ---
 
