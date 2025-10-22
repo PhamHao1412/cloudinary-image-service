@@ -74,11 +74,11 @@ It supports dynamic image transformations such as resize, crop, rotate, watermar
 
 ## 🔧 Configuration
 
-Tạo file `.env` ở thư mục gốc:
+Create `.env` file in the root:
 
 ```env
 PORT=8085
-DATABASE_URL=postgres://postgres:hacker1412@localhost:5438/playground?sslmode=disable&search_path=image_service
+DATABASE_URL=postgres://<username>:<password>@<host>:<port>/<database>?sslmode=disable&search_path=<schema>
 CLOUDINARY_URL=cloudinary://<api_key>:<api_secret>@<cloud_name>
 ```
 
